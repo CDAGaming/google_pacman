@@ -2365,9 +2365,27 @@ function () {
   g.updateActorTargetPositions = function () {
     for (var b = g.playerCount; b < g.playerCount + 4; b++) g.actors[b].B()
   };
+
+  g.nearestDotDir = function() {
+    y = g.actors[0].tilePos[0]
+    x = g.actors[0].tilePos[1]
+    console.log("x: " + x)
+    console.log("y: " + y)
+
+    // BFS from pacman's current position
+    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) return 4
+    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) return 8
+    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) return 1
+    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) return 2 
+      
+  };
+
   g.moveActors = function () {
     for (var b in g.actors) g.actors[b].move()
+    //pacman = g.actors[0]
+    //pacman.requestedDir = g.nearestDotDir()
   };
+
   g.ghostDies = function (b, c) {
     g.playSound("eating-ghost", 0);
     g.addToScore(200 * g.modeScoreMultiplier, c);
@@ -2774,8 +2792,9 @@ function () {
       g.blinkScoreLabels()
     } else for (b = 0; b < g.tickMultiplier + c; b++) {
       g.moveActors();
+      g.actors[0].requestedDir = g.nearestDotDir();
       if (g.gameplayMode == 0) if (g.tilesChanged) {
-        g.detectCollisions();
+        //g.detectCollisions();
         g.updateActorTargetPositions()
       }
       g.globalTime++;
