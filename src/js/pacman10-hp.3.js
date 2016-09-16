@@ -2381,19 +2381,11 @@ function () {
       return -1
     } else {
       console.log("Not visited, Now Searching" + [x,y])
-      visited[[x,y]] = 1
+      visited[[x,y]] = 1  // push to visited list
       if (visited[[x,y]] != undefined){
         console.log("Added to visitor list")
       }
       // Base Case, right next to a dot
-      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x].allowedDir&4 && g.playfield[y][x - 8].dot) {
-        console.log("Base Case WEST")
-        return g.directionEnums.WEST
-      } 
-      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x].allowedDir&8 && g.playfield[y][x + 8].dot) {
-        console.log("Base Case EAST")
-        return g.directionEnums.EAST
-      } 
       if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y][x].allowedDir&1 && g.playfield[y - 8][x].dot) {
         console.log("Base Case NORTH")
         return g.directionEnums.NORTH
@@ -2402,18 +2394,16 @@ function () {
         console.log("Base Case SOUTH")
         return g.directionEnums.SOUTH
       } 
+      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x].allowedDir&4 && g.playfield[y][x - 8].dot) {
+        console.log("Base Case WEST")
+        return g.directionEnums.WEST
+      } 
+      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x].allowedDir&8 && g.playfield[y][x + 8].dot) {
+        console.log("Base Case EAST")
+        return g.directionEnums.EAST
+      } 
 
       // Recursive Case: empty dot (0), keep searching
-      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x].allowedDir&4) {
-        if (g.nearestDotDFS(x-8,y,visited) != -1){
-          return g.directionEnums.WEST;
-        }
-      }
-      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].allowedDir&8) {
-        if (g.nearestDotDFS(x+8,y,visited) != -1){
-          return g.directionEnums.EAST;
-        }  
-      } 
       if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].allowedDir&1) {
           if (g.nearestDotDFS(x,y-8,visited) != -1){
             return g.directionEnums.NORTH;
@@ -2423,6 +2413,16 @@ function () {
           if (g.nearestDotDFS(x,y+8,visited) != -1){
             return g.directionEnums.SOUTH;
           }  
+      } 
+      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x].allowedDir&4) {
+        if (g.nearestDotDFS(x-8,y,visited) != -1){
+          return g.directionEnums.WEST;
+        }
+      }
+      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].allowedDir&8) {
+        if (g.nearestDotDFS(x+8,y,visited) != -1){
+          return g.directionEnums.EAST;
+        }  
       } 
     }
   };
