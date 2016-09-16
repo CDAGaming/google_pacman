@@ -2372,58 +2372,123 @@ function () {
     for (var b = g.playerCount; b < g.playerCount + 4; b++) g.actors[b].B()
   };
 
-  g.nearestDotDir = function() {
-    y = g.actors[0].tilePos[0]
-    x = g.actors[0].tilePos[1]
-    console.log("x: " + x/8)
-    console.log("y: " + y/8)
+  g.nearestDotDFS = function(x,y){
+    // Base Case, right next to a dot
+    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
+      return g.directionEnums.WEST
+    } 
+    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) {
+      return g.directionEnums.EAST
+    } 
+    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) {
+      return g.directionEnums.NORTH
+    } 
+    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) {
+      return g.directionEnums.SOUTH
+    } 
 
-    // BFS from pacman's current position
-    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) return g.directionEnums.WEST
-    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) return g.directionEnums.EAST
-    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) return g.directionEnums.NORTH
-    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) return g.directionEnums.SOUTH
-    else return g.moveTowardsClosest(x,y)
+    // Recursive Case, keep searching
+    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot != 1) {
+      if (g.nearestDotDFS(x-8,y) == 1 || g.nearestDotDFS(x-8,y) == 2 || g.nearestDotDFS(x-8,y) == 4 || g.nearestDotDFS(x-8,y) == 8){
+        return g.directionEnums.WEST
+      }  
+    }
+    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot != 1) {
+      if (g.nearestDotDFS(x+8,y) == 1 || g.nearestDotDFS(x+8,y) == 2 || g.nearestDotDFS(x+8,y) == 4 || g.nearestDotDFS(x+8,y) == 8){
+        return g.directionEnums.EAST
+      } 
+    } 
+    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot != 1) {
+      if (g.nearestDotDFS(x,y - 8) == 1 || g.nearestDotDFS(x,y - 8) == 2 || g.nearestDotDFS(x,y - 8) == 4 || g.nearestDotDFS(x,y - 8) == 8){
+        return g.directionEnums.NORTH
+      } 
+    } 
+    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot != 1) {
+      if (g.nearestDotDFS(x,y+8) == 1 || g.nearestDotDFS(x,y+8) == 2 || g.nearestDotDFS(x,y+8) == 4 || g.nearestDotDFS(x,y+8) == 8){
+        return g.directionEnums.SOUTH
+      } 
+    } 
+
+
   };
-  g.quadrantNumber = function(x,y){
-    searchradius = 3;
-    for (i = 0; i < searchradius; i++) {
-      for(j = 0; j < searchradius; j++) {
-        if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 1 //NORTH WEST
-      }
-    }
-    for (i = 0; i < searchradius; i++) {
-      for(j = -searchradius; j < 0; j++) {
-        if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 2  //SOUTH EAST
-      }
-    }
-    for (i = -searchradius; i < 0; i++) {
-      for(j = -searchradius; j < 0; j++) {
-        if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 3 //NORTH EAST
-      }
-    }
-    for (i = -searchradius; i < 0; i++) {
-      for(j = 0; j < searchradius; j++) {
-        if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 4  //SOUTH WEST
-      }
-    }
-  };
-  g.moveTowardsClosest = function(x,y){
-    quadrantNumb = g.quadrantNumber(x,y)
-    if(quadrantNumb == 1) {
-      return Math.random() < 0.5 ? g.directionEnums.WEST : g.directionEnums.NORTH;
-    }
-    if (quadrantNumb == 2) {
-      return Math.random() < 0.5 ? g.directionEnums.EAST : g.directionEnums.SOUTH;
-    }
-    if (quadrantNumb == 3) {
-      return Math.random() < 0.5 ? g.directionEnums.EAST : g.directionEnums.NORTH;
-    }
-    if (quadrantNumb == 4) {
-      return Math.random() < 0.5 ? g.directionEnums.WEST : g.directionEnums.SOUTH;
-    }
-    else return 0
-  };
+
+  // g.nearestDotDFS = function(x,y){
+  //   if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
+  //     return g.directionEnums.WEST
+  //   } else {
+  //     return g.nearestDotDFS(x - 8, y)
+  //   }
+  //   if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) {
+  //     return g.directionEnums.EAST
+  //   } else {
+  //     return g.nearestDotDFS(x + 8, y)
+  //   }
+  //   if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) {
+  //     return g.directionEnums.NORTH
+  //   } else {
+  //     return g.nearestDotDFS(x, y - 8)
+  //   }
+  //   if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) {
+  //     return g.directionEnums.SOUTH
+  //   } else {
+  //     return g.nearestDotDFS(x, y+8)
+  //   }
+  // };
+
+  // g.nearestDotDir = function(x,y) {
+  //   // TODO: BFS from pacman's current position
+  //   // Currently implementing DFS
+  //   if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
+  //     return g.directionEnums.WEST
+  //   } else {
+  //     return nearestDotDFS(playfield[y][x - 8])
+  //   }
+  //   if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) return g.directionEnums.EAST
+  //   if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) return g.directionEnums.NORTH
+  //   if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) return g.directionEnums.SOUTH
+  //   // else return g.moveTowardsClosest(x,y)
+  // };
+
+
+  // g.quadrantNumber = function(x,y){
+  //   searchradius = 3;
+  //   for (i = 0; i < searchradius; i++) {
+  //     for(j = 0; j < searchradius; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 1 //NORTH WEST
+  //     }
+  //   }
+  //   for (i = 0; i < searchradius; i++) {
+  //     for(j = -searchradius; j < 0; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 2  //SOUTH EAST
+  //     }
+  //   }
+  //   for (i = -searchradius; i < 0; i++) {
+  //     for(j = -searchradius; j < 0; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 3 //NORTH EAST
+  //     }
+  //   }
+  //   for (i = -searchradius; i < 0; i++) {
+  //     for(j = 0; j < searchradius; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 4  //SOUTH WEST
+  //     }
+  //   }
+  // };
+  // g.moveTowardsClosest = function(x,y){
+  //   quadrantNumb = g.quadrantNumber(x,y)
+  //   if(quadrantNumb == 1) {
+  //     return Math.random() < 0.5 ? g.directionEnums.WEST : g.directionEnums.NORTH;
+  //   }
+  //   if (quadrantNumb == 2) {
+  //     return Math.random() < 0.5 ? g.directionEnums.EAST : g.directionEnums.SOUTH;
+  //   }
+  //   if (quadrantNumb == 3) {
+  //     return Math.random() < 0.5 ? g.directionEnums.EAST : g.directionEnums.NORTH;
+  //   }
+  //   if (quadrantNumb == 4) {
+  //     return Math.random() < 0.5 ? g.directionEnums.WEST : g.directionEnums.SOUTH;
+  //   }
+  //   else return 0
+  // };
 
   g.closestDotPosition = function(){
     //implement bfs from pacman position
@@ -2845,7 +2910,7 @@ function () {
       g.blinkScoreLabels()
     } else for (b = 0; b < g.tickMultiplier + c; b++) {
       g.moveActors();
-      g.actors[0].requestedDir = g.nearestDotDir();
+      g.actors[0].requestedDir = g.nearestDotDFS(g.actors[0].tilePos[1], g.actors[0].tilePos[0]);
       if (g.gameplayMode == 0) if (g.tilesChanged) {
         //g.detectCollisions();
         g.updateActorTargetPositions()
