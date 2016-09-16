@@ -2374,59 +2374,50 @@ function () {
 
   g.nearestDotDFS = function(x,y,visited){
     if (visited.indexOf([x,y]) != -1) {
+      //if it is already visited
       return -1
     } else {
       visited.push([x,y])
-    }
+      // Base Case, right next to a dot
+      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
+        console.log("Base Case WEST")
+        return g.directionEnums.WEST
+      } 
+      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) {
+        console.log("Base Case EAST")
+        return g.directionEnums.EAST
+      } 
+      if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) {
+        console.log("Base Case NORTH")
+        return g.directionEnums.NORTH
+      } 
+      if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) {
+        console.log("Base Case SOUTH")
+        return g.directionEnums.SOUTH
+      } 
 
-
-    // Base Case, right next to a dot
-    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
-      return g.directionEnums.WEST
-    } 
-    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) {
-      return g.directionEnums.EAST
-    } 
-    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) {
-      return g.directionEnums.NORTH
-    } 
-    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) {
-      return g.directionEnums.SOUTH
-    } 
-
-    // Recursive Case, keep searching
-    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot != 1) {
-      if (visited.indexOf([x-8,y]) == -1){
-        searchval = g.nearestDotDFS(x-8,y,visited);
-        if (searchval == 1 || searchval == 2 || searchval == 4 || searchval == 8){
+      // Recursive Case: empty dot (0), keep searching
+      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 0) {
+        if (g.nearestDotDFS(x-8,y,visited) != -1){
           return g.directionEnums.WEST;
         }
       }
-    }
-    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot != 1) {
-      if (visited.indexOf([x+8,y]) == -1){
-        searchval = g.nearestDotDFS(x+8,y,visited);
-        if (searchval == 1 || searchval == 2 || searchval == 4 || searchval == 8){
+      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 0) {
+        if (g.nearestDotDFS(x+8,y,visited) != -1){
           return g.directionEnums.EAST;
         }  
-      }
-    } 
-    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot != 1) {
-      if (visited.indexOf([x,y-8]) == -1){
-        searchval = g.nearestDotDF(x,y-8,visited);
-        if (searchval == 1 || searchval == 2 || searchval == 4 || searchval == 8){
-          return g.directionEnums.NORTH;
-        }  
-      }
-    } 
-    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot != 1) {
-      if (visited.indexOf([x,y+8]) == -1){
-        searchval = g.nearestDotDFS(x,y+8,visited);
-        if (searchval == 1 || searchval == 2 || searchval == 4 || searchval == 8){
-          return g.directionEnums.SOUTH;
-        }  
-      }
-    } 
+      } 
+      if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 0) {
+          if (g.nearestDotDF(x,y-8,visited) != -1){
+            return g.directionEnums.NORTH;
+          }  
+      } 
+      if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 0) {
+          if (g.nearestDotDFS(x,y+8,visited) != -1){
+            return g.directionEnums.SOUTH;
+          }  
+      } 
+    }
   };
 
   // g.nearestDotDFS = function(x,y){
