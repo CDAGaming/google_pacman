@@ -1814,6 +1814,12 @@ function () {
       g.changeElementBkPos(this.el, b[1], b[0], a)
     }
   };
+  g.directionEnums = {
+    WEST : 4,
+    NORTH : 1,
+    SOUTH : 2,
+    EAST: 8
+  };
   g.rand = function () {
     var b = 4294967296,
       c = 134775813;
@@ -2373,11 +2379,19 @@ function () {
     console.log("y: " + y)
 
     // BFS from pacman's current position
-    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) return 4
-    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) return 8
-    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) return 1
-    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) return 2 
+    if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) return g.directionEnums.WEST
+    if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) return g.directionEnums.EAST
+    if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) return g.directionEnums.NORTH
+    if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) return g.directionEnums.SOUTH
       
+  };
+
+  g.closestDotPosition = function(){
+    //implement bfs from pacman position
+    //stop case is the first dot found
+    //return somekind of datastucture of the moves used to get there
+    // --> Must create way to store a single move? (position + direction)
+    return 0
   };
 
   g.moveActors = function () {
