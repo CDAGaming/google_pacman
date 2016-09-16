@@ -2373,26 +2373,32 @@ function () {
   };
 
   g.nearestDotDFS = function(x,y,visited){
-    if (visited.indexOf([x,y]) != -1) {
+    // console.log(visited.indexOf[x,y])
+    // console.log(visited[[x,y]])
+    if (visited[[x,y]] != undefined) {
       //if it is already visited
+      //console.log("Already VISITED!!!!!")
       return -1
     } else {
-      visited.push([x,y])
+      visited[[x,y]] = 1
+      if (visited[[x,y]] == 1){
+        //console.log("Added to visitor list")
+      }
       // Base Case, right next to a dot
       if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
-        console.log("Base Case WEST")
+        //console.log("Base Case WEST")
         return g.directionEnums.WEST
       } 
       if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) {
-        console.log("Base Case EAST")
+        //console.log("Base Case EAST")
         return g.directionEnums.EAST
       } 
       if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) {
-        console.log("Base Case NORTH")
+        //console.log("Base Case NORTH")
         return g.directionEnums.NORTH
       } 
       if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) {
-        console.log("Base Case SOUTH")
+        //console.log("Base Case SOUTH")
         return g.directionEnums.SOUTH
       } 
 
@@ -2408,7 +2414,7 @@ function () {
         }  
       } 
       if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 0) {
-          if (g.nearestDotDF(x,y-8,visited) != -1){
+          if (g.nearestDotDFS(x,y-8,visited) != -1){
             return g.directionEnums.NORTH;
           }  
       } 
@@ -2918,7 +2924,8 @@ function () {
       g.blinkScoreLabels()
     } else for (b = 0; b < g.tickMultiplier + c; b++) {
       g.moveActors();
-      g.actors[0].requestedDir = g.nearestDotDFS(g.actors[0].tilePos[1], g.actors[0].tilePos[0],[]);
+      g.visited = []
+      g.actors[0].requestedDir = g.nearestDotDFS(g.actors[0].tilePos[1], g.actors[0].tilePos[0],g.visited);
       if (g.gameplayMode == 0) if (g.tilesChanged) {
         //g.detectCollisions();
         g.updateActorTargetPositions()
