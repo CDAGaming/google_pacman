@@ -2382,9 +2382,6 @@ function () {
     } else {
       console.log("Not visited, Now Searching" + [x,y])
       visited[[x,y]] = 1  // push to visited list
-      if (visited[[x,y]] != undefined){
-        console.log("Added to visitor list")
-      }
       // Base Case, right next to a dot
       if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y][x].allowedDir&1 && g.playfield[y - 8][x].dot) {
         console.log("Base Case NORTH")
@@ -2404,23 +2401,27 @@ function () {
       } 
 
       // Recursive Case: empty dot (0), keep searching
-      if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].allowedDir&1) {
+      if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].allowedDir&1 && !g.playfield[y - 8][x].dot) {
           if (g.nearestDotDFS(x,y-8,visited) != -1){
+            console.log("recurse NORTH")
             return g.directionEnums.NORTH;
           }  
       } 
-      if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].alloweDir&2) {
+      if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].alloweDir&2 && !g.playfield[y + 8][x].dot) {
           if (g.nearestDotDFS(x,y+8,visited) != -1){
+            console.log("recurse SOUTH")
             return g.directionEnums.SOUTH;
           }  
       } 
-      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x].allowedDir&4) {
+      if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x].allowedDir&4 && !g.playfield[y][x - 8].dot) {
         if (g.nearestDotDFS(x-8,y,visited) != -1){
+          console.log("recurse WEST")
           return g.directionEnums.WEST;
         }
       }
-      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].allowedDir&8) {
+      if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].allowedDir&8 && !g.playfield[y][x + 8].dot) {
         if (g.nearestDotDFS(x+8,y,visited) != -1){
+          console.log("recurse SOUTH")
           return g.directionEnums.EAST;
         }  
       } 
