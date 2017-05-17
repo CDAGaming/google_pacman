@@ -1814,6 +1814,12 @@ function () {
       g.changeElementBkPos(this.el, b[1], b[0], a)
     }
   };
+  g.directionEnums = {
+    WEST : 4,
+    NORTH : 1,
+    SOUTH : 2,
+    EAST: 8
+  };
   g.rand = function () {
     var b = 4294967296,
       c = 134775813;
@@ -2365,8 +2371,158 @@ function () {
   g.updateActorTargetPositions = function () {
     for (var b = g.playerCount; b < g.playerCount + 4; b++) g.actors[b].B()
   };
+  g.validTile = function (x,y){
+    if (g.playfield[y] != undefined && g.playfield[y][x] != undefined) {
+      return 1
+    } else {
+      return 0
+    }
+  };
+  g.nearestDotDFS = function(x,y,visited){
+    // console.log(visited.indexOf[x,y])
+    // console.log(visited[[x,y]])
+    if (visited[[x,y]] != undefined) {
+      //if it is already visited
+      console.log("Already VISITED!!!!!")
+      return -1
+    } else {
+      console.log("Not visited, Now Searching" + [x,y])
+      visited[[x,y]] = 1  // push to visited list
+      // Base Case, right next to a dot
+      if (g.validTile(x,y-8) && g.playfield[y][x].allowedDir&1 && g.playfield[y - 8][x].dot) {
+        console.log("Base Case NORTH")
+        return g.directionEnums.NORTH
+      } 
+      if (g.validTile(x,y+8) && g.playfield[y][x].allowedDir&2 && g.playfield[y + 8][x].dot) {
+        console.log("Base Case SOUTH")
+        return g.directionEnums.SOUTH
+      } 
+      if (g.validTile(x-8,y) && g.playfield[y][x].allowedDir&4 && g.playfield[y][x - 8].dot) {
+        console.log("Base Case WEST")
+        return g.directionEnums.WEST
+      } 
+      if (g.validTile(x+8,y) && g.playfield[y][x].allowedDir&8 && g.playfield[y][x + 8].dot) {
+        console.log("Base Case EAST")
+        return g.directionEnums.EAST
+      } 
+
+      // Recursive Case: empty dot (0), keep searching
+      if (g.validTile(x,y-8) && g.playfield[y - 8][x].allowedDir&1 && !g.playfield[y - 8][x].dot) {
+          if (g.nearestDotDFS(x,y-8,visited) != -1){
+            console.log("recurse NORTH")
+            return g.directionEnums.NORTH;
+          }  
+      } 
+      if (g.validTile(x,y+8) && g.playfield[y + 8][x].alloweDir&2 && !g.playfield[y + 8][x].dot) {
+          if (g.nearestDotDFS(x,y+8,visited) != -1){
+            console.log("recurse SOUTH")
+            return g.directionEnums.SOUTH;
+          }  
+      } 
+      if (g.validTile(x-8,y) && g.playfield[y][x].allowedDir&4 && !g.playfield[y][x - 8].dot) {
+        if (g.nearestDotDFS(x-8,y,visited) != -1){
+          console.log("recurse WEST")
+          return g.directionEnums.WEST;
+        }
+      }
+      if (g.validTile(x+8,y) && g.playfield[y][x + 8].allowedDir&8 && !g.playfield[y][x + 8].dot) {
+        if (g.nearestDotDFS(x+8,y,visited) != -1){
+          console.log("recurse EAST")
+          return g.directionEnums.EAST;
+        }  
+      } 
+    }
+  };
+
+  // g.nearestDotDFS = function(x,y){
+  //   if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
+  //     return g.directionEnums.WEST
+  //   } else {
+  //     return g.nearestDotDFS(x - 8, y)
+  //   }
+  //   if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) {
+  //     return g.directionEnums.EAST
+  //   } else {
+  //     return g.nearestDotDFS(x + 8, y)
+  //   }
+  //   if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) {
+  //     return g.directionEnums.NORTH
+  //   } else {
+  //     return g.nearestDotDFS(x, y - 8)
+  //   }
+  //   if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) {
+  //     return g.directionEnums.SOUTH
+  //   } else {
+  //     return g.nearestDotDFS(x, y+8)
+  //   }
+  // };
+
+  // g.nearestDotDir = function(x,y) {
+  //   // TODO: BFS from pacman's current position
+  //   // Currently implementing DFS
+  //   if (g.playfield[y] != undefined && g.playfield[y][x - 8] != undefined && g.playfield[y][x - 8].dot == 1) {
+  //     return g.directionEnums.WEST
+  //   } else {
+  //     return nearestDotDFS(playfield[y][x - 8])
+  //   }
+  //   if (g.playfield[y] != undefined && g.playfield[y][x + 8] != undefined && g.playfield[y][x + 8].dot == 1) return g.directionEnums.EAST
+  //   if (g.playfield[y - 8] != undefined && g.playfield[y - 8][x] != undefined && g.playfield[y - 8][x].dot == 1) return g.directionEnums.NORTH
+  //   if (g.playfield[y + 8] != undefined && g.playfield[y + 8][x] != undefined && g.playfield[y + 8][x].dot == 1) return g.directionEnums.SOUTH
+  //   // else return g.moveTowardsClosest(x,y)
+  // };
+
+
+  // g.quadrantNumber = function(x,y){
+  //   searchradius = 3;
+  //   for (i = 0; i < searchradius; i++) {
+  //     for(j = 0; j < searchradius; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 1 //NORTH WEST
+  //     }
+  //   }
+  //   for (i = 0; i < searchradius; i++) {
+  //     for(j = -searchradius; j < 0; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 2  //SOUTH EAST
+  //     }
+  //   }
+  //   for (i = -searchradius; i < 0; i++) {
+  //     for(j = -searchradius; j < 0; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 3 //NORTH EAST
+  //     }
+  //   }
+  //   for (i = -searchradius; i < 0; i++) {
+  //     for(j = 0; j < searchradius; j++) {
+  //       if (g.playfield[y - (j * 8)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)] != undefined && g.playfield[y - (j * 8)][x - (8 * i)].dot == 1) return 4  //SOUTH WEST
+  //     }
+  //   }
+  // };
+  // g.moveTowardsClosest = function(x,y){
+  //   quadrantNumb = g.quadrantNumber(x,y)
+  //   if(quadrantNumb == 1) {
+  //     return Math.random() < 0.5 ? g.directionEnums.WEST : g.directionEnums.NORTH;
+  //   }
+  //   if (quadrantNumb == 2) {
+  //     return Math.random() < 0.5 ? g.directionEnums.EAST : g.directionEnums.SOUTH;
+  //   }
+  //   if (quadrantNumb == 3) {
+  //     return Math.random() < 0.5 ? g.directionEnums.EAST : g.directionEnums.NORTH;
+  //   }
+  //   if (quadrantNumb == 4) {
+  //     return Math.random() < 0.5 ? g.directionEnums.WEST : g.directionEnums.SOUTH;
+  //   }
+  //   else return 0
+  // };
+
+  g.closestDotPosition = function(){
+    //implement bfs from pacman position
+    //stop case is the first dot found
+    //return somekind of datastucture of the moves used to get there
+    // --> Must create way to store a single move? (position + direction)
+    return 0
+  };
   g.moveActors = function () {
     for (var b in g.actors) g.actors[b].move()
+    //pacman = g.actors[0]
+    //pacman.requestedDir = g.nearestDotDir()
   };
   g.ghostDies = function (b, c) {
     g.playSound("eating-ghost", 0);
@@ -2774,8 +2930,10 @@ function () {
       g.blinkScoreLabels()
     } else for (b = 0; b < g.tickMultiplier + c; b++) {
       g.moveActors();
+      g.visited = []
+      g.actors[0].requestedDir = g.nearestDotDFS(g.actors[0].tilePos[1], g.actors[0].tilePos[0],g.visited);
       if (g.gameplayMode == 0) if (g.tilesChanged) {
-        g.detectCollisions();
+        //g.detectCollisions();
         g.updateActorTargetPositions()
       }
       g.globalTime++;
