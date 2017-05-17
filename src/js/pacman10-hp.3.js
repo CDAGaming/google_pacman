@@ -2371,13 +2371,15 @@ function () {
   g.updateActorTargetPositions = function () {
     for (var b = g.playerCount; b < g.playerCount + 4; b++) g.actors[b].B()
   };
+
   g.validTile = function (x,y){
     if (g.playfield[y] != undefined && g.playfield[y][x] != undefined) {
       return 1
     } else {
       return 0
     }
-  };
+  }
+
   g.nearestDotDFS = function(x,y,visited){
     // console.log(visited.indexOf[x,y])
     // console.log(visited[[x,y]])
@@ -2519,11 +2521,13 @@ function () {
     // --> Must create way to store a single move? (position + direction)
     return 0
   };
+
   g.moveActors = function () {
     for (var b in g.actors) g.actors[b].move()
     //pacman = g.actors[0]
     //pacman.requestedDir = g.nearestDotDir()
   };
+
   g.ghostDies = function (b, c) {
     g.playSound("eating-ghost", 0);
     g.addToScore(200 * g.modeScoreMultiplier, c);
